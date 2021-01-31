@@ -63,3 +63,65 @@ code {
 fs.writeFile("./src/index.css", newIndex, (err) => {
   err && console.log(err);
 });
+
+//Automating creation of components and css for that
+const r1 = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const getComponentData = (name) => {
+  return `import React from 'react';
+  import "../css/${name}.css";
+
+  const ${name} = () => {
+      return (
+          <div>
+              
+          </div>
+      );
+  }
+  
+  export default ${name};
+  `;
+};
+
+let recursiveForComponents = () => {
+  const r2 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  r2.question(
+    "Enter name of component to make a new component OR Enter q to exit\n",
+    (ans) => {
+      if (ans === "q") {
+        return r2.close();
+      } else {
+        r2.close();
+        const data = getComponentData(ans);
+        fs.writeFile(`./src/components/${ans}.js`, data, (err) => {
+          err && console.log(err);
+        });
+        fs.writeFile(`./src/css/${ans}.css`, "", (err) => {
+          err && console.log(err);
+        });
+        recursiveForComponents();
+      }
+    }
+  );
+};
+
+r1.question("Do you want to create components now? Y OR N\n", (ans1) => {
+  if (ans1 === "Y") {
+    r1.close();
+    fs.mkdir("./src/components", (err) => {
+      err && console.log(err);
+    });
+    fs.mkdir("./src/css", (err) => {
+      err && console.log(err);
+    });
+    recursiveForComponents();
+  } else {
+    r1.close();
+  }
+});
